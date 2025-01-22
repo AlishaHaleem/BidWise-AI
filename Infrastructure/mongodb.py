@@ -5,7 +5,6 @@ from utils import get_logger, load_env_variable
 
 logger = get_logger(__name__)
 
-
 class MongoDbOperations:
     def __init__(self):
         self.conn_string = load_env_variable("MONGO_URI")
