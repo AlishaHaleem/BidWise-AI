@@ -1,5 +1,5 @@
 from mongodb_operations import submit_bid_to_mongo, fetch_all_bids, fetch_bid_by_id, process_bid_with_ai
-
+from utils import load_env_variable
 # Sample usage
 if __name__ == "__main__":
     # Sample Bid Data

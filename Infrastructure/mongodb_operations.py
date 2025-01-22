@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 from Database import MongoDBHandler
-
 # Initialize MongoDB Handler
 db_handler = MongoDBHandler()
 
