@@ -1,13 +1,15 @@
-
-
-# TODO: Init MongoDB database.
-
-# ------------
-
-# TODO: Add bid
 import datetime
+from dataclasses import dataclass
+from typing import List, Optional, Literal, Dict
+from datetime import datetime, timedelta
+from enum import Enum
+from pymongo import MongoClient
+import os
+from dotenv import load_dotenv
 
+client = MongoClient("localhost", 27017)
 
+# Bidder Class
 class Bidder:
     def __init__(self, name, registered, turnover, experience, references, certifications, tax_clearance, location,
                  industry_certifications):
@@ -22,98 +24,281 @@ class Bidder:
         self.industry_certifications = industry_certifications
         self.bids = []  # List to store submitted bids
 
+# Location Class
+@dataclass
+class Location:
+    country: str
+    region: str
+    coordinates: Optional[Dict[str, float]] = None
 
-class Bid:
-    def __init__(self, bidder_name, bid_amount):
-        self.bidder_name = bidder_name
-        self.bid_amount = bid_amount
-        self.submission_time = datetime.datetime.now()
+# Service Requirements Class
+@dataclass
+class ServiceRequirements:
+    minimum_bandwidth: float
+    latency: int
+    reliability: float
+    service_level: Literal['basic', 'standard', 'premium']
 
+# Cost Breakdown Class
+@dataclass
+class CostBreakdown:
+    setup_cost: float
+    monthly_recurring_cost: float
+    maintenance_cost: float
+    currency: str
 
+# Contact Person Class
+@dataclass
+class ContactPerson:
+    name: str
+    email: str
+    phone: str
+
+# Previous Experience Class
+@dataclass
+class PreviousExperience:
+    project_name: str
+    description: str
+    year: int
+    reference_contact: Optional[ContactPerson] = None
+
+# Bidder Info Class
+@dataclass
+class BidderInfo:
+    company_name: str
+    registration_number: str
+    contact_person: ContactPerson
+    previous_experience: Optional[List[PreviousExperience]] = None
+
+# Technical Specification Class
+@dataclass
+class TechnicalSpecification:
+    technology: str
+    implementation_timeframe: int
+    equipment_details: List[str]
+
+# Compliance Details Class
+@dataclass
+class ComplianceDetails:
+    licenses_held: List[str]
+    certifications: List[str]
+    regulatory_compliance: bool
+
+# Project Phase Enum
+class ProjectPhase(Enum):
+    PLANNING = "planning"
+    IMPLEMENTATION = "implementation"
+    TESTING = "testing"
+    DEPLOYMENT = "deployment"
+    MAINTENANCE = "maintenance"
+
+# Timeline Class
+@dataclass
+class Timeline:
+    phase: ProjectPhase
+    start_date: datetime
+    end_date: datetime
+    deliverables: List[str]
+    dependencies: Optional[List[str]] = None
+
+# Risk Assessment Class
+@dataclass
+class RiskAssessment:
+    risk_description: str
+    impact: Literal['low', 'medium', 'high']
+    probability: Literal['low', 'medium', 'high']
+    mitigation_strategy: str
+    contingency_plan: str
+
+# Project Team Class
+@dataclass
+class ProjectTeam:
+    role: str
+    name: str
+    qualifications: List[str]
+    responsibilities: List[str]
+    availability: Literal['full-time', 'part-time']
+
+# Quality Assurance Class
+@dataclass
+class QualityAssurance:
+    testing_methodology: str
+    quality_metrics: List[str]
+    monitoring_tools: List[str]
+    reporting_frequency: str
+
+# Proposal Class
+@dataclass
+class Proposal:
+    proposal_id: str
+    bid_reference: str
+    executive_summary: str
+    company_profile: str
+    project_understanding: str
+    proposed_solution: str
+    methodology: str
+    technical_approach: str
+    network_architecture: str
+    security_measures: List[str]
+    scalability_plan: str
+    project_timeline: List[Timeline]
+    team_structure: List[ProjectTeam]
+    quality_assurance: QualityAssurance
+    risk_assessment: List[RiskAssessment]
+    maintenance_plan: str
+    support_levels: Dict[str, str]
+    escalation_matrix: Dict[str, ContactPerson]
+    training_plan: Optional[str] = None
+    documentation_deliverables: Optional[List[str]] = None
+    assumptions: Optional[List[str]] = None
+    constraints: Optional[List[str]] = None
+    appendices: Optional[Dict[str, str]] = None
+
+# Bid Class
+@dataclass
+class NetworkBid:
+    bid_id: str
+    project_id: str
+    bidder_info: BidderInfo
+    location: Location
+    service_requirements: ServiceRequirements
+    costs: CostBreakdown
+    technical_specification: TechnicalSpecification
+    compliance_details: ComplianceDetails
+    proposal: Proposal
+    submission_date: datetime
+    valid_until: datetime
+    status: Literal['draft', 'submitted', 'under_review', 'accepted', 'rejected']
+    bid_score: Optional[float] = None
+    feedback: Optional[str] = None
+
+# Eligibility Check
 def check_eligibility(bidder):
-    # Define minimum criteria
-    MIN_TURNOVER = 500000  # Minimum annual turnover in currency units
-    MIN_EXPERIENCE = 2  # Minimum years of relevant experience
+    MIN_TURNOVER = 500000
+    MIN_EXPERIENCE = 2
     REQUIRED_CERTIFICATIONS = ["ISO 9001", "Safety Certification"]
-    REQUIRED_LOCATION = "Local"  # Change based on project-specific requirements
+    REQUIRED_LOCATION = "Local"
 
-    # Check criteria
     messages = []
 
-    # Registration
     if not bidder.registered:
         messages.append(f"Bidder {bidder.name} is not registered.")
-
-    # Financial Turnover
     if bidder.turnover < MIN_TURNOVER:
         messages.append(f"Bidder {bidder.name} does not meet the financial turnover requirement.")
-
-    # Experience
     if bidder.experience < MIN_EXPERIENCE:
         messages.append(f"Bidder {bidder.name} lacks the required experience.")
-
-    # Certifications
     missing_certs = [cert for cert in REQUIRED_CERTIFICATIONS if cert not in bidder.certifications]
     if missing_certs:
         messages.append(f"Bidder {bidder.name} is missing required certifications: {', '.join(missing_certs)}.")
-
-    # Tax Clearance
     if not bidder.tax_clearance:
         messages.append(f"Bidder {bidder.name} does not have tax clearance.")
-
-    # References
     if len(bidder.references) < 2:
         messages.append(f"Bidder {bidder.name} must provide at least 2 references.")
-
-    # Location
     if bidder.location != REQUIRED_LOCATION:
         messages.append(f"Bidder {bidder.name} must have a local presence.")
 
-    # Final Decision
     if messages:
         return f"Bidder {bidder.name} does NOT meet eligibility criteria:\n" + "\n".join(messages)
     return f"Bidder {bidder.name} meets all eligibility criteria."
 
+# Calculate Bid Score
+def calculate_bid_score(bid):
+    score = 0
 
-def submit_bid(bidder, bid_amount):
-    # Check if the bidder meets eligibility criteria
+    # Example scoring criteria
+    if bid.service_requirements.service_level == 'premium':
+        score += 30
+    elif bid.service_requirements.service_level == 'standard':
+        score += 20
+    else:
+        score += 10
+
+    if bid.costs.setup_cost < 20000:
+        score += 25
+    else:
+        score += 15
+
+    if bid.compliance_details.regulatory_compliance:
+        score += 20
+
+    if len(bid.technical_specification.equipment_details) > 2:
+        score += 25
+
+    bid.bid_score = score
+    return score
+
+# Provide Feedback
+def provide_feedback(bid, comments):
+    bid.feedback = comments
+    return f"Feedback for bid {bid.bid_id} added successfully."
+
+# Submit Bid
+def submit_bid(bidder, bid_id, project_id, location, service_requirements, costs, technical_specification,
+               compliance_details, proposal):
     eligibility_result = check_eligibility(bidder)
     if "NOT meet" in eligibility_result:
         return f"Bid submission failed: {eligibility_result}"
 
-    # Create and store the bid
-    new_bid = Bid(bidder_name=bidder.name, bid_amount=bid_amount)
+    new_bid = NetworkBid(
+        bid_id=bid_id,
+        project_id=project_id,
+        bidder_info=BidderInfo(
+            company_name=bidder.name,
+            registration_number="REG123",
+            contact_person=ContactPerson(
+                name="John Doe",
+                email="john.doe@example.com",
+                phone="+123456789"
+            )
+        ),
+        location=location,
+        service_requirements=service_requirements,
+        costs=costs,
+        technical_specification=technical_specification,
+        compliance_details=compliance_details,
+        proposal=proposal,
+        submission_date=datetime.now(),
+        valid_until=datetime.now() + timedelta(days=90),
+        status="submitted"
+    )
+
+    score = calculate_bid_score(new_bid)
+    feedback_comments = "Bid scored based on quality of service, cost efficiency, and compliance."
+    provide_feedback(new_bid, feedback_comments)
+
     bidder.bids.append(new_bid)
-    return f"Bid submitted successfully by {bidder.name} for amount {bid_amount}."
+    return f"Bid submitted successfully by {bidder.name}. Score: {score}."
+
+# MongoDBHandler Class
+class MongoDBHandler:
 
 
-# Example Usage
-bidder = Bidder(
-    name="Tech Solutions Inc.",
-    registered=True,
-    turnover=600000,
-    experience=3,
-    references=["Client A", "Client B"],
-    certifications=["ISO 9001", "Safety Certification"],
-    tax_clearance=True,
-    location="Local",
-    industry_certifications={"Industry": "IT", "Certifications": ["Cybersecurity Certification"]}
-)
+    def __init__(self):
+            # Load .env file
+        dotenv_path = "D:/persona-projects/BidWise-AI/.env"
+        load_dotenv(dotenv_path=dotenv_path)
 
-# Submit a bid
-bid_result = submit_bid(bidder, 120000)
-print(bid_result)
+            # Get the MongoDB URI from the .env file
+        connection_string = os.getenv("MONGO_URI")
 
-# List all bids
-print(f"\nBids by {bidder.name}:")
-for bid in bidder.bids:
-    print(f"- Amount: {bid.bid_amount}, Submitted on: {bid.submission_time}")
+        if not connection_string:
+            raise ValueError("MONGO_URI is not set or is empty in the .env file")
 
-# TODO: Get bids
-# TODO: Delete bids
+            # Connect to MongoDB
+        self.client = MongoClient(connection_string)
+        self.db = self.client['bid_database']
+        self.collection = self.db['bids']
 
+    def store_bid(self, bid_data):
+        result = self.collection.insert_one(bid_data)
+        return result.inserted_id
 
-# ------------
-# TODO: Add bidders.
+    def get_all_bids(self):
+        return list(self.collection.find())
 
+    def get_bid_by_id(self, bid_id):
+        return self.collection.find_one({'bid_id': bid_id})
 
+    def update_bid(self, bid_id, update_data):
+        result = self.collection.update_one({'bid_id': bid_id}, {'$set': update_data})
+        return result.modified_count
