@@ -1,1 +1,5 @@
+
 # BIDWISE PROJECT REQUIREMENTS
+operation~=0.0.4
+pymongo~=4.8.0
+python-dotenv~=1.0.1
