@@ -6,6 +6,8 @@ from enum import Enum
 from pymongo import MongoClient
 import os
 from dotenv import load_dotenv
+import logging
+
 
 client = MongoClient("localhost", 27017)
 
@@ -271,34 +273,59 @@ def submit_bid(bidder, bid_id, project_id, location, service_requirements, costs
 
 # MongoDBHandler Class
 class MongoDBHandler:
-
-
     def __init__(self):
+        try:
             # Load .env file
-        dotenv_path = "D:/persona-projects/BidWise-AI/.env"
-        load_dotenv(dotenv_path=dotenv_path)
+            dotenv_path = "D:/persona-projects/BidWise-AI/.env"
+            load_dotenv(dotenv_path=dotenv_path)
 
             # Get the MongoDB URI from the .env file
-        connection_string = os.getenv("MONGO_URI")
-
-        if not connection_string:
-            raise ValueError("MONGO_URI is not set or is empty in the .env file")
+            connection_string = os.getenv("MONGO_URI")
+            if not connection_string:
+                raise ValueError("MONGO_URI is not set or is empty in the .env file")
 
             # Connect to MongoDB
-        self.client = MongoClient(connection_string)
-        self.db = self.client['bid_database']
-        self.collection = self.db['bids']
+            self.client = MongoClient(connection_string)
+            self.db = self.client['bid_database']
+            self.collection = self.db['bids']
+            logging.info("Successfully connected to MongoDB")
+
+        except ValueError as e:
+            logging.error(f"ValueError during initialization: {str(e)}")
+            raise  # Raise exception to stop the program if environment variable is missing
+
+        except Exception as e:
+            logging.error(f"Error initializing database handler: {str(e)}")
+            raise  # Catch any other exception, log it, and raise it to stop the program
 
     def store_bid(self, bid_data):
-        result = self.collection.insert_one(bid_data)
-        return result.inserted_id
+        try:
+            result = self.collection.insert_one(bid_data)
+            return result.inserted_id
+        except Exception as e:
+            logging.error(f"Error inserting bid: {str(e)}")
+            raise  # Raise exception if something goes wrong
 
     def get_all_bids(self):
-        return list(self.collection.find())
+        try:
+            return list(self.collection.find())
+        except Exception as e:
+            logging.error(f"Error fetching all bids: {str(e)}")
+            raise  # Raise exception if something goes wrong
 
     def get_bid_by_id(self, bid_id):
-        return self.collection.find_one({'bid_id': bid_id})
+        try:
+            return self.collection.find_one({'bid_id': bid_id})
+        except Exception as e:
+            logging.error(f"Error fetching bid by id: {str(e)}")
+            raise  # Raise exception if something goes wrong
 
     def update_bid(self, bid_id, update_data):
-        result = self.collection.update_one({'bid_id': bid_id}, {'$set': update_data})
-        return result.modified_count
+        try:
+            result = self.collection.update_one({'bid_id': bid_id}, {'$set': update_data})
+            return result.modified_count
+        except Exception as e:
+            logging.error(f"Error updating bid: {str(e)}")
+            raise  # Raise exception if something goes wrong
+
+
