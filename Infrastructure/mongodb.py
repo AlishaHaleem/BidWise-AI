@@ -169,34 +169,152 @@ if __name__ == "__main__":
 
         # Sample Bid Data
         sample_bid = {
-            "bidder_name": "John Doe",
-            "bid_amount": 25000,
-            "bid_date": "2025-01-21",
-            "project_id": "proj12345",
-            "service_requirements": {
-                "service_level": "premium",
-                "minimum_bandwidth": 500.0,
-                "latency": 20,
-                "reliability": 99.9,
-            },
-            "costs": {
-                "setup_cost": 10000,
-                "monthly_recurring_cost": 500,
-                "maintenance_cost": 200,
-                "currency": "USD",
-            },
-            "technical_specification": {
-                "technology": "Fiber Optic",
-                "implementation_timeframe": 90,
-                "equipment_details": ["Router", "Switch", "Fiber Cable"],
-            },
-            "compliance_details": {
-                "licenses_held": ["ISP License", "Operational License"],
-                "certifications": ["ISO 9001", "Safety Certification"],
-                "regulatory_compliance": True,
-            },
-            "proposal": "Fiber Optic Network Plan...",
-        }
+                "project_details": {
+                    "project_name": "UNICEF Giga School Connectivity Project",
+                    "location": {
+                        "country": "X",
+                        "region": "Central Region",
+                        "target_schools": 250,
+                        "total_coverage_area_km2": 5000,
+                        "project_description": "Comprehensive internet connectivity solution for rural and urban schools"
+                    }
+                },
+                "bidder_details": {
+                    "company_name": "Global Network Solutions",
+                    "company_registration": {
+                        "number": "GNS-2024-001",
+                        "country_of_registration": "Switzerland"
+                    },
+                    "contact_information": {
+                        "primary_contact": {
+                            "name": "Elena Rodriguez",
+                            "position": "Director of International Projects",
+                            "email": "e.rodriguez@globalnetwork.com",
+                            "phone": "+41 44 123 4567"
+                        },
+                        "technical_lead": {
+                            "name": "Dr. Michael Chen",
+                            "position": "Chief Technology Officer",
+                            "email": "m.chen@globalnetwork.com"
+                        }
+                    }
+                },
+                "technical_proposal": {
+                    "connectivity_options": {
+                        "primary_technology": "Fiber Optic",
+                        "backup_technology": ["Satellite", "LTE"],
+                        "bandwidth_options": {
+                            "standard_package": {
+                                "download_speed": 100,
+                                "upload_speed": 50,
+                                "contention_ratio": "1:20"
+                            },
+                            "premium_package": {
+                                "download_speed": 250,
+                                "upload_speed": 100,
+                                "contention_ratio": "1:10"
+                            }
+                        },
+                        "infrastructure_plan": {
+                            "network_topology": "Redundant Star Network",
+                            "equipment": [
+                                "Cisco Enterprise Routers",
+                                "High-Capacity Network Switches",
+                                "Fiber Optic Cable Infrastructure"
+                            ]
+                        },
+                        "security_protocols": [
+                            "Next-Generation Firewall",
+                            "Intrusion Detection System",
+                            "End-to-End Encryption",
+                            "Regular Security Audits"
+                        ]
+                    }
+                },
+                "pricing_proposal": {
+                    "pricing_model": {
+                        "type": "Fixed Monthly Fee with Flexible Scaling",
+                        "implementation_cost": 75000,
+                        "monthly_service_fee": 5000,
+                        "contract_duration": 36,
+                        "total_contract_value": 255000
+                    },
+                    "payment_milestones": [
+                        {"milestone": "Contract Signing", "payment_percentage": 30},
+                        {"milestone": "Infrastructure Setup", "payment_percentage": 30},
+                        {"milestone": "Project Completion", "payment_percentage": 30},
+                        {"milestone": "Final Acceptance", "payment_percentage": 10}
+                    ],
+                    "payment_terms": {
+                        "method": ["Bank Transfer", "Letter of Credit"],
+                        "currency": "USD"
+                    }
+                },
+                "legal_compliance": {
+                    "certifications": [
+                        "ISO 27001",
+                        "ISO 9001",
+                        "ITU Telecommunications Standards"
+                    ],
+                    "warranties": {
+                        "equipment_warranty": "5 years",
+                        "service_uptime_guarantee": "99.95%"
+                    },
+                    "insurance_details": {
+                        "professional_liability_coverage": 5000000,
+                        "cyber_insurance_coverage": 2500000
+                    },
+                    "regulatory_compliance": True
+                },
+                "project_management": {
+                    "project_manager": {
+                        "name": "Sarah Thompson",
+                        "qualifications": [
+                            "PMP Certified",
+                            "10+ Years International Project Management",
+                            "Previous UNICEF Project Experience"
+                        ],
+                        "responsibilities": [
+                            "Overall Project Coordination",
+                            "Stakeholder Management",
+                            "Quality Assurance"
+                        ]
+                    },
+                    "project_team": [
+                        {
+                            "role": "Technical Lead",
+                            "expertise": "Network Infrastructure Design"
+                        },
+                        {
+                            "role": "Local Implementation Coordinator",
+                            "expertise": "Regional Deployment Strategies"
+                        },
+                        {
+                            "role": "Compliance Specialist",
+                            "expertise": "Regulatory Requirements"
+                        }
+                    ]
+                },
+                "proposal_document": {
+                    "full_proposal_link": "This is proposal ...."
+                },
+                "support_plan": {
+                    "post_deployment_support": {
+                        "support_hours": "24/7",
+                        "response_time_guarantees": {
+                            "critical_issues": "2 hours",
+                            "major_issues": "4 hours",
+                            "minor_issues": "24 hours"
+                        },
+                        "support_channels": [
+                            "Dedicated Support Hotline",
+                            "Email Support",
+                            "Remote Diagnostic Tools"
+                        ],
+                        "maintenance_window": "Quarterly comprehensive system review"
+                    }
+                }
+            }
 
         # Submit a bid
         submit_result = submit_bid_to_mongo(sample_bid, db_handler)
