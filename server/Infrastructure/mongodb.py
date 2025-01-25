@@ -13,8 +13,9 @@ class MongoDbOperations:
     def __init__(self):
         """Initialize MongoDB connection and bids collection."""
         self.conn_string = load_env_variable("MONGO_URI")
-        self.table = self._database_conn()
         self.table_name: str = "bids"
+        self.table = self._database_conn()
+        
 
     def _database_conn(self):
         """Establish a connection to MongoDB and return the bids collection."""
