@@ -53,6 +53,6 @@ class AiEngines:
 
 
 
-llm = AiEngines.groq_api()
-
-print(llm.invoke("Hi!"))
+# llm = AiEngines.groq_api()
+#
+# print(llm.invoke("What is the capital of france?"))

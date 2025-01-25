@@ -13,6 +13,7 @@ class MongoDbOperations:
         """Initialize MongoDB connection and bids collection."""
         self.conn_string = load_env_variable("MONGO_URI")
         self.bids_table = self._database_conn()
+        self.table_name: str = "bids"
 
     def _database_conn(self):
         """Establish a connection to MongoDB and return the bids collection."""
@@ -24,7 +25,7 @@ class MongoDbOperations:
 
             # Access the 'app' database and 'bids' collection
             db = client["app"]
-            collection = db["bids"]
+            collection = db[self.table_name]
             logger.info("Connected to 'bids' collection.")
             return collection
         except pymongo.errors.ConnectionError as e:
@@ -158,181 +159,3 @@ def process_bid_with_ai(bid_id, ai_model, db_handler):
     except Exception as e:
         logger.error(f"Error processing bid with AI: {e}")
         raise
-
-
-# Sample Usage
-if __name__ == "__main__":
-    try:
-        # Initialize MongoDB Handler
-        db_handler = MongoDbOperations()
-        logger.info("Database handler initialized successfully.")
-
-        # Sample Bid Data
-        sample_bid = {
-                "project_details": {
-                    "project_name": "UNICEF Giga School Connectivity Project",
-                    "location": {
-                        "country": "X",
-                        "region": "Central Region",
-                        "target_schools": 250,
-                        "total_coverage_area_km2": 5000,
-                        "project_description": "Comprehensive internet connectivity solution for rural and urban schools"
-                    }
-                },
-                "bidder_details": {
-                    "company_name": "Global Network Solutions",
-                    "company_registration": {
-                        "number": "GNS-2024-001",
-                        "country_of_registration": "Switzerland"
-                    },
-                    "contact_information": {
-                        "primary_contact": {
-                            "name": "Elena Rodriguez",
-                            "position": "Director of International Projects",
-                            "email": "e.rodriguez@globalnetwork.com",
-                            "phone": "+41 44 123 4567"
-                        },
-                        "technical_lead": {
-                            "name": "Dr. Michael Chen",
-                            "position": "Chief Technology Officer",
-                            "email": "m.chen@globalnetwork.com"
-                        }
-                    }
-                },
-                "technical_proposal": {
-                    "connectivity_options": {
-                        "primary_technology": "Fiber Optic",
-                        "backup_technology": ["Satellite", "LTE"],
-                        "bandwidth_options": {
-                            "standard_package": {
-                                "download_speed": 100,
-                                "upload_speed": 50,
-                                "contention_ratio": "1:20"
-                            },
-                            "premium_package": {
-                                "download_speed": 250,
-                                "upload_speed": 100,
-                                "contention_ratio": "1:10"
-                            }
-                        },
-                        "infrastructure_plan": {
-                            "network_topology": "Redundant Star Network",
-                            "equipment": [
-                                "Cisco Enterprise Routers",
-                                "High-Capacity Network Switches",
-                                "Fiber Optic Cable Infrastructure"
-                            ]
-                        },
-                        "security_protocols": [
-                            "Next-Generation Firewall",
-                            "Intrusion Detection System",
-                            "End-to-End Encryption",
-                            "Regular Security Audits"
-                        ]
-                    }
-                },
-                "pricing_proposal": {
-                    "pricing_model": {
-                        "type": "Fixed Monthly Fee with Flexible Scaling",
-                        "implementation_cost": 75000,
-                        "monthly_service_fee": 5000,
-                        "contract_duration": 36,
-                        "total_contract_value": 255000
-                    },
-                    "payment_milestones": [
-                        {"milestone": "Contract Signing", "payment_percentage": 30},
-                        {"milestone": "Infrastructure Setup", "payment_percentage": 30},
-                        {"milestone": "Project Completion", "payment_percentage": 30},
-                        {"milestone": "Final Acceptance", "payment_percentage": 10}
-                    ],
-                    "payment_terms": {
-                        "method": ["Bank Transfer", "Letter of Credit"],
-                        "currency": "USD"
-                    }
-                },
-                "legal_compliance": {
-                    "certifications": [
-                        "ISO 27001",
-                        "ISO 9001",
-                        "ITU Telecommunications Standards"
-                    ],
-                    "warranties": {
-                        "equipment_warranty": "5 years",
-                        "service_uptime_guarantee": "99.95%"
-                    },
-                    "insurance_details": {
-                        "professional_liability_coverage": 5000000,
-                        "cyber_insurance_coverage": 2500000
-                    },
-                    "regulatory_compliance": True
-                },
-                "project_management": {
-                    "project_manager": {
-                        "name": "Sarah Thompson",
-                        "qualifications": [
-                            "PMP Certified",
-                            "10+ Years International Project Management",
-                            "Previous UNICEF Project Experience"
-                        ],
-                        "responsibilities": [
-                            "Overall Project Coordination",
-                            "Stakeholder Management",
-                            "Quality Assurance"
-                        ]
-                    },
-                    "project_team": [
-                        {
-                            "role": "Technical Lead",
-                            "expertise": "Network Infrastructure Design"
-                        },
-                        {
-                            "role": "Local Implementation Coordinator",
-                            "expertise": "Regional Deployment Strategies"
-                        },
-                        {
-                            "role": "Compliance Specialist",
-                            "expertise": "Regulatory Requirements"
-                        }
-                    ]
-                },
-                "proposal_document": {
-                    "full_proposal_link": "This is proposal ...."
-                },
-                "support_plan": {
-                    "post_deployment_support": {
-                        "support_hours": "24/7",
-                        "response_time_guarantees": {
-                            "critical_issues": "2 hours",
-                            "major_issues": "4 hours",
-                            "minor_issues": "24 hours"
-                        },
-                        "support_channels": [
-                            "Dedicated Support Hotline",
-                            "Email Support",
-                            "Remote Diagnostic Tools"
-                        ],
-                        "maintenance_window": "Quarterly comprehensive system review"
-                    }
-                }
-            }
-
-        # Submit a bid
-        submit_result = submit_bid_to_mongo(sample_bid, db_handler)
-        logger.info(submit_result)
-
-        # Fetch all bids
-        all_bids = fetch_all_bids(db_handler)
-        logger.info(f"Fetched all bids: {len(all_bids)} bids found.")
-
-        # Process a bid with AI
-        ai_model = AIModel()
-        example_bid_id = "64a3b8f4f2345c0e3e22d6b2"  # Replace with an actual ObjectId
-        ai_result = process_bid_with_ai(example_bid_id, ai_model, db_handler)
-        logger.info(ai_result)
-
-        # Rank bids based on the criteria
-        ranked_bids = rank_bids(all_bids)
-        logger.info(f"Ranked Bids: {ranked_bids}")
-
-    except Exception as e:
-        logger.error(f"Error during sample usage: {e}")

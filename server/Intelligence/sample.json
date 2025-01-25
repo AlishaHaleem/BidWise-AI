@@ -1,5 +1,8 @@
 [
     {
+        "bid_id": "UNICEF-GIGA-BID-001",
+        "bidder_id": "BIDDER-GNS-001",
+        "project_id": "UGSC0001",
         "project_details": {
             "project_name": "UNICEF Giga School Connectivity Project",
             "location": {
@@ -99,6 +102,9 @@
         }
     },
     {
+        "bid_id": "UNICEF-GIGA-BID-002",
+        "bidder_id": "BIDDER-TCI-002",
+        "project_id": "UGSC0001",
         "project_details": {
             "project_name": "UNICEF Giga School Connectivity Project",
             "location": {
@@ -198,6 +204,9 @@
         }
     },
     {
+        "bid_id": "UNICEF-GIGA-BID-003",
+        "bidder_id": "BIDDER-GSN-003",
+        "project_id": "UGSC0001",
         "project_details": {
             "project_name": "UNICEF Giga School Connectivity Project",
             "location": {
