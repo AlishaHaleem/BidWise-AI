@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BiddingSystem, UNICEFProposalDashboard } from './pages'
+import { BiddingSystem, UNICEFProposalDashboard, BidList } from './pages'
 import './App.css'
 
 function App() {
@@ -8,7 +8,9 @@ function App() {
   return (
     <>
       <div>
+        <BidList />
         <BiddingSystem />
+        <UNICEFProposalDashboard />
       </div>
       
     </>
