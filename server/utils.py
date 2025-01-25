@@ -36,7 +36,7 @@ def load_env_variable(var_name):
     str: The value of the environment variable if found, otherwise None.
     """
     # Load the .env file
-    for path in ['.env', '../.env', '../../.env', '../../../.env']:
+    for path in ['.env', '../.env', '../../.env', '../../../.env', '../../../../.env']:
         if os.path.exists(path):
             load_dotenv(dotenv_path=path)
             break
