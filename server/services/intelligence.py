@@ -3,10 +3,10 @@ import os
 import logging
 from datetime import datetime
 from typing import List, Dict, Any
-from server.agents.ai_engines import AiEngines
+from agents.ai_engines import AiEngines
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
-from server.services.mongodb import MongoDbOperations
+from services.mongodb import MongoDbOperations
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

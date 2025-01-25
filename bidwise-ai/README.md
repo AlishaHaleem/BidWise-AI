@@ -11,7 +11,7 @@ Before setting up the project, ensure you have the following installed:
 1. **Clone the repository:**
    ```bash
    git clone https://github.com/AlishaHaleem/BidWise-AI.git
-   cd client
+   cd bidwise-ai
    ```
 
 2. **Install dependencies:**
