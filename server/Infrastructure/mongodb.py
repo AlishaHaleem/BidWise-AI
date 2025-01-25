@@ -2,15 +2,18 @@ import pymongo.errors
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from datetime import datetime, timedelta
-from server.utils import get_logger, load_env_variable
+from server.utils import get_logger
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 # Initialize logger
 logger = get_logger(__name__)
 
 class MongoDbOperations:
     def __init__(self, table_name: str = "bids"):
         """Initialize MongoDB connection and bids collection."""
-        self.conn_string = load_env_variable("MONGO_URI")
+        self.conn_string = os.environ.get("MONGO_URI")
         self.table_name = table_name  # Move this before _database_conn()
         self.table = self._database_conn()
 

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BiddingSystem } from './pages'
+import { BiddingSystem, UNICEFProposalDashboard } from './pages'
 import './App.css'
 
 function App() {

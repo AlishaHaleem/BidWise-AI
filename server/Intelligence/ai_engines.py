@@ -1,5 +1,6 @@
 import os
-from utils import load_env_variable
+from dotenv import load_dotenv
+load_dotenv()
 from langchain_groq import ChatGroq
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
@@ -7,7 +8,6 @@ from pydantic import BaseModel, Field
 
 
 class AiEngines:
-    ENV_FILE_PATH = '.env'
 
     """
     AI engines for langchain function calling facility.
@@ -22,7 +22,7 @@ class AiEngines:
             ChatOpenAI: An instance of the ChatOpenAI model.
         """
         try:
-            os.environ["OPENAI_API_KEY"] = load_env_variable("OPENAI_API_KEY")
+            os.environ["OPENAI_API_KEY"] = os.environ.get("OPENAI_API_KEY")
             llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
             return llm
         except Exception as e:
@@ -39,10 +39,10 @@ class AiEngines:
             ChatGroq: An instance of the ChatGroq model.
         """
         try:
-            os.environ["GROQ_API_KEY"] = load_env_variable("GROQ_API_KEY")
+            
             llm = ChatGroq(
                 temperature=0,
-                groq_api_key=load_env_variable("GROQ_API_KEY"),
+                groq_api_key=os.environ.get("GROQ_API_KEY"),
                 model_name=model,
             )
             # llm = llm.bind_tools(tools)
