@@ -6,6 +6,7 @@ from typing import List, Dict, Any
 from ai_engines import AiEngines
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
+from server.Infrastructure.mongodb import MongoDbOperations
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -15,6 +16,8 @@ class BidAnalyzer:
     def __init__(self, api_key: str = None):
        self.llm = AiEngines.groq_api()
        self.output_parser = JsonOutputParser()
+       self.db = MongoDbOperations()
+       self.db.table_name = "ai_insights"
 
     def generate_bid_insights(self, bid_data: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -116,12 +119,16 @@ def main():
     # Analyze all bids
     bid_insights = analyzer.analyze_all_bids(bids)
 
-    # Save insights to a file
-    output_file = f'bid_insights_{datetime.now().strftime("%Y%m%d_%H%M%S")}.json'
-    with open(output_file, 'w') as f:
-        json.dump(bid_insights, f, indent=2)
+    # Save insights to MongoDB
+    for bid_insight in bid_insights:
+         analyzer.db.store_bid(json.dumps(bid_insight))
 
-    logger.info(f"Bid analysis completed. Insights saved to {output_file}")
+    # Save insights to a file
+    # output_file = f'bid_insights_{datetime.now().strftime("%Y%m%d_%H%M%S")}.json'
+    # with open(output_file, 'w') as f:
+    #     json.dump(bid_insights, f, indent=2)
+    #
+    # logger.info(f"Bid analysis completed. Insights saved to {output_file}")
 
 
 if __name__ == "__main__":
