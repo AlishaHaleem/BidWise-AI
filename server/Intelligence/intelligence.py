@@ -121,7 +121,7 @@ def main():
 
     # Save insights to MongoDB
     for bid_insight in bid_insights:
-         analyzer.db.store_bid(json.dumps(bid_insight))
+         analyzer.db.store_bid(bid_insight)
 
     # Save insights to a file
     # output_file = f'bid_insights_{datetime.now().strftime("%Y%m%d_%H%M%S")}.json'
