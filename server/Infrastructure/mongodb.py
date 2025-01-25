@@ -7,12 +7,13 @@ from server.utils import get_logger, load_env_variable
 # Initialize logger
 logger = get_logger(__name__)
 
+print(load_env_variable("MONGO_URI"))
 
 class MongoDbOperations:
     def __init__(self):
         """Initialize MongoDB connection and bids collection."""
         self.conn_string = load_env_variable("MONGO_URI")
-        self.bids_table = self._database_conn()
+        self.table = self._database_conn()
         self.table_name: str = "bids"
 
     def _database_conn(self):
@@ -35,11 +36,7 @@ class MongoDbOperations:
     def store_bid(self, bid_data):
         """Store a new bid in the MongoDB collection."""
         try:
-            bid_data["submission_date"] = datetime.now()
-            bid_data["valid_until"] = datetime.now() + timedelta(days=90)
-            result = self.bids_table.insert_one(bid_data)
-            logger.info(f"Bid added successfully with ID: {result.inserted_id}")
-            return str(result.inserted_id)
+            return self.table.insert_one(bid_data)
         except Exception as e:
             logger.error(f"Error while adding bid: {e}")
             raise
@@ -48,7 +45,7 @@ class MongoDbOperations:
         """Fetch a bid by its ID."""
         try:
             bid_object_id = ObjectId(bid_id)
-            bid = self.bids_table.find_one({"_id": bid_object_id}, {"_id": 0})  # Exclude _id
+            bid = self.table.find_one({"_id": bid_object_id}, {"_id": 0})  # Exclude _id
             if bid:
                 logger.info(f"Fetched bid with ID: {bid_id}")
             else:
@@ -59,3 +56,8 @@ class MongoDbOperations:
             raise
 
 
+db = MongoDbOperations()
+
+data = {"hi": 2}
+
+db.store_bid(data)
