@@ -2,7 +2,7 @@ import pymongo.errors
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from datetime import datetime, timedelta
-from server.utils import get_logger
+from server.utils.utils import get_logger
 import os
 from dotenv import load_dotenv
 
