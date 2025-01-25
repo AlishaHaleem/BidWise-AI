@@ -1,0 +1,387 @@
+[
+  {
+    "bid_report": {
+      "bid_id": "UNICEF-GIGA-BID-001",
+      "bidder_id": "BIDDER-GNS-001",
+      "project_id": "UGSC0001",
+      "project_details": {
+        "project_name": "UNICEF Giga School Connectivity Project",
+        "location": {
+          "country": "X",
+          "region": "Central Region",
+          "target_schools": 250,
+          "total_coverage_area_km2": 5000,
+          "project_description": "Comprehensive internet connectivity solution for rural and urban schools"
+        }
+      },
+      "bidder_details": {
+        "company_name": "Global Network Solutions",
+        "company_registration": {
+          "number": "GNS-2024-001",
+          "country_of_registration": "Switzerland"
+        },
+        "contact_information": {
+          "primary_contact": {
+            "name": "Elena Rodriguez",
+            "position": "Director of International Projects",
+            "email": "e.rodriguez@globalnetwork.com",
+            "phone": "+41 44 123 4567"
+          },
+          "technical_lead": {
+            "name": "Dr. Michael Chen",
+            "position": "Chief Technology Officer",
+            "email": "m.chen@globalnetwork.com"
+          }
+        }
+      },
+      "technical_evaluation": {
+        "connectivity_options": {
+          "primary_technology": "Fiber Optic (Strong)",
+          "backup_technology": [
+            "Satellite (Average)",
+            "LTE (Good)"
+          ],
+          "bandwidth_options": {
+            "standard_package": {
+              "download_speed": 100,
+              "upload_speed": 50,
+              "contention_ratio": "1:20 (Fair)"
+            },
+            "premium_package": {
+              "download_speed": 250,
+              "upload_speed": 100,
+              "contention_ratio": "1:10 (Good)"
+            }
+          },
+          "infrastructure_plan": {
+            "network_topology": "Redundant Star Network (Good)",
+            "equipment": [
+              "Cisco Enterprise Routers (Strong)",
+              "High-Capacity Network Switches (Strong)",
+              "Fiber Optic Cable Infrastructure (Strong)"
+            ]
+          },
+          "security_protocols": [
+            "Next-Generation Firewall (Strong)",
+            "Intrusion Detection System (Strong)",
+            "End-to-End Encryption (Strong)",
+            "Regular Security Audits (Good)"
+          ]
+        }
+      },
+      "financial_analysis": {
+        "pricing_model": {
+          "type": "Fixed Monthly Fee with Flexible Scaling (Good)",
+          "implementation_cost": 75000,
+          "monthly_service_fee": 5000,
+          "contract_duration": 36,
+          "total_contract_value": 255000
+        },
+        "cost_effectiveness": "Good",
+        "recommendation": "Consider negotiating a lower implementation cost"
+      },
+      "risk_evaluation": {
+        "risks": [
+          {
+            "risk_type": "Implementation Delay",
+            "risk_level": "Medium",
+            "mitigation": "Establish clear milestones and penalties for delays"
+          },
+          {
+            "risk_type": "Security Breach",
+            "risk_level": "Low",
+            "mitigation": "Regular security audits and incident response plans"
+          },
+          {
+            "risk_type": "Technology Obsolescence",
+            "risk_level": "Medium",
+            "mitigation": "Plan for technology upgrades and include them in the contract"
+          }
+        ]
+      },
+      "strategic_recommendations": {
+        "recommendations": [
+          "Negotiate a service-level agreement (SLA) for uptime and support",
+          "Consider local partnerships for faster deployment and support",
+          "Include a pilot project to test the solution and ensure alignment with UNICEF's requirements"
+        ]
+      },
+      "compliance_review": {
+        "certifications": [
+          "ISO 27001 (Strong)",
+          "ISO 9001 (Strong)",
+          "ITU Telecommunications Standards (Good)"
+        ],
+        "warranties": {
+          "equipment_warranty": "5 years (Good)",
+          "service_uptime_guarantee": "99.95% (Good)"
+        },
+        "insurance_details": {
+          "professional_liability_coverage": 5000000,
+          "cyber_insurance_coverage": 2500000
+        },
+        "regulatory_compliance": true,
+        "compliance_status": "Good"
+      }
+    },
+    "project_id": "UGSC0001",
+    "bidder_id": "BIDDER-GNS-001",
+    "bid_id": "UNICEF-GIGA-BID-001"
+  },
+  {
+    "bid_report": {
+      "bid_id": "UNICEF-GIGA-BID-002",
+      "bidder_id": "BIDDER-TCI-002",
+      "project_id": "UGSC0001",
+      "project_details": {
+        "project_name": "UNICEF Giga School Connectivity Project",
+        "location": {
+          "country": "X",
+          "region": "Eastern Region",
+          "target_schools": 200,
+          "total_coverage_area_km2": 4200,
+          "project_description": "Advanced internet connectivity solution for remote educational institutions"
+        }
+      },
+      "bidder_details": {
+        "company_name": "TechConnect Innovations",
+        "company_registration": {
+          "number": "TCI-2024-002",
+          "country_of_registration": "Canada"
+        },
+        "contact_information": {
+          "primary_contact": {
+            "name": "Alex Wong",
+            "position": "VP of Global Partnerships",
+            "email": "a.wong@techconnect.com",
+            "phone": "+1 416 555 7890"
+          },
+          "technical_lead": {
+            "name": "Dr. Emma Hartley",
+            "position": "Head of Network Engineering",
+            "email": "e.hartley@techconnect.com"
+          }
+        }
+      },
+      "technical_evaluation": {
+        "connectivity_options": {
+          "primary_technology": "Wireless Point-to-Point",
+          "backup_technology": [
+            "4G/LTE",
+            "Microwave"
+          ],
+          "bandwidth_options": {
+            "standard_package": {
+              "download_speed": 80,
+              "upload_speed": 40,
+              "contention_ratio": "1:25"
+            },
+            "premium_package": {
+              "download_speed": 200,
+              "upload_speed": 80,
+              "contention_ratio": "1:15"
+            }
+          },
+          "infrastructure_plan": {
+            "network_topology": "Mesh Network",
+            "equipment": [
+              "High-Gain Wireless Antennas",
+              "Enterprise-Grade Wireless Controllers",
+              "Edge Computing Nodes"
+            ]
+          },
+          "security_protocols": [
+            "Multi-Layer Firewall",
+            "Advanced Threat Protection",
+            "VPN Tunneling",
+            "Continuous Monitoring"
+          ]
+        }
+      },
+      "financial_analysis": {
+        "pricing_model": {
+          "type": "Tiered Usage Model",
+          "implementation_cost": 65000,
+          "monthly_service_fee": 4500,
+          "contract_duration": 36,
+          "total_contract_value": 227000
+        },
+        "cost_effectiveness": {
+          "implementation_cost_per_school": 325,
+          "monthly_service_fee_per_school": 22.5,
+          "total_contract_value_per_school": 1135
+        }
+      },
+      "risk_evaluation": {
+        "risks": [
+          {
+            "risk_type": "Technical",
+            "description": "Reliance on wireless technology may be affected by environmental factors.",
+            "mitigation": "Implement backup technologies and continuous monitoring."
+          },
+          {
+            "risk_type": "Financial",
+            "description": "Currency fluctuations may impact total contract value.",
+            "mitigation": "Consider fixed-rate contracts or hedging strategies."
+          }
+        ]
+      },
+      "strategic_recommendations": {
+        "recommendations": [
+          {
+            "recommendation": "Implement premium bandwidth package for larger schools or institutions with higher demand.",
+            "benefits": [
+              "Improved user experience",
+              "Reduced contention ratio"
+            ]
+          },
+          {
+            "recommendation": "Establish a local presence or partnerships to ensure regulatory compliance and support.",
+            "benefits": [
+              "Easier communication",
+              "Faster issue resolution"
+            ]
+          }
+        ]
+      },
+      "compliance_review": {
+        "certifications": [
+          "ISO 9001",
+          "ISO 27001",
+          "NIST Cybersecurity Framework"
+        ],
+        "warranties": {
+          "equipment_warranty": "4 years",
+          "service_uptime_guarantee": "99.90%"
+        },
+        "insurance_details": {
+          "professional_liability_coverage": 4000000,
+          "cyber_insurance_coverage": 2000000
+        },
+        "regulatory_compliance": true
+      }
+    },
+    "project_id": "UGSC0001",
+    "bidder_id": "BIDDER-TCI-002",
+    "bid_id": "UNICEF-GIGA-BID-002"
+  },
+  {
+    "bid_report": {
+      "bid_id": "UNICEF-GIGA-BID-003",
+      "bidder_id": "BIDDER-GSN-003",
+      "project_id": "UGSC0001",
+      "project_name": "UNICEF Giga School Connectivity Project",
+      "location": {
+        "country": "X",
+        "region": "Western Region",
+        "target_schools": 300,
+        "total_coverage_area_km2": 6000
+      },
+      "company_name": "Global Satellite Networks",
+      "contact_information": {
+        "primary_contact": {
+          "name": "Maria Santos",
+          "position": "Director of International Development",
+          "email": "m.santos@globalsatnet.com",
+          "phone": "+1 650 555 2345"
+        },
+        "technical_lead": {
+          "name": "Dr. Raj Patel",
+          "position": "Chief Satellite Solutions Architect",
+          "email": "r.patel@globalsatnet.com"
+        }
+      },
+      "technical_evaluation": {
+        "connectivity_options": {
+          "primary_technology": "Hybrid Satellite-Terrestrial",
+          "backup_technology": [
+            "Low Earth Orbit Satellite",
+            "4G/LTE"
+          ],
+          "bandwidth_options": {
+            "standard_package": {
+              "download_speed": 75,
+              "upload_speed": 35,
+              "contention_ratio": "1:30"
+            },
+            "premium_package": {
+              "download_speed": 180,
+              "upload_speed": 70,
+              "contention_ratio": "1:20"
+            }
+          },
+          "infrastructure_plan": {
+            "network_topology": "Hybrid Mesh-Star",
+            "equipment": [
+              "Advanced Satellite Communication Terminals",
+              "Ground Station Network Routers",
+              "Multi-Constellation Satellite Receivers"
+            ]
+          },
+          "security_protocols": [
+            "Quantum Encryption",
+            "Satellite Link Security",
+            "AI-Powered Threat Detection",
+            "Multi-Factor Authentication"
+          ]
+        }
+      },
+      "financial_analysis": {
+        "pricing_model": {
+          "type": "Performance-Based Hybrid Model",
+          "implementation_cost": 85000,
+          "monthly_service_fee": 6000,
+          "contract_duration": 36,
+          "total_contract_value": 297000
+        },
+        "cost_effectiveness": {
+          "cost_per_school": 990,
+          "cost_per_km2": 49.5
+        }
+      },
+      "risk_evaluation": {
+        "risks": [
+          {
+            "risk_type": "Technical",
+            "description": "Reliance on hybrid satellite-terrestrial technology may pose challenges in remote areas with limited terrestrial infrastructure.",
+            "mitigation": "Implementing robust backup technologies (Low Earth Orbit Satellite and 4G/LTE) and regular maintenance checks can help mitigate this risk."
+          },
+          {
+            "risk_type": "Financial",
+            "description": "Potential fluctuations in exchange rates during the contract period may impact total contract value.",
+            "mitigation": "Consider incorporating a currency hedging mechanism in the contract to minimize exchange rate risks."
+          }
+        ]
+      },
+      "compliance_review": {
+        "certifications": [
+          "ISO 27001",
+          "ITU Telecommunications Standards",
+          "Space Systems Safety Certification"
+        ],
+        "warranties": {
+          "equipment_warranty": "6 years",
+          "service_uptime_guarantee": "99.99%"
+        },
+        "insurance_details": {
+          "professional_liability_coverage": 6000000,
+          "cyber_insurance_coverage": 3000000
+        },
+        "regulatory_compliance": true
+      },
+      "strategic_recommendations": [
+        {
+          "recommendation": "Regularly review and update the security protocols to address emerging threats and vulnerabilities in the system.",
+          "impact": "Enhanced system security and reduced risk of cyber-attacks."
+        },
+        {
+          "recommendation": "Establish a local presence or partnerships in the Western Region of country X to facilitate project implementation, maintenance, and support.",
+          "impact": "Improved responsiveness, customer satisfaction, and potential cost savings through local partnerships."
+        }
+      ]
+    },
+    "project_id": "UGSC0001",
+    "bidder_id": "BIDDER-GSN-003",
+    "bid_id": "UNICEF-GIGA-BID-003"
+  }
+]
