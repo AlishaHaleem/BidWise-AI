@@ -7,6 +7,7 @@ from agents.ai_engines import AiEngines
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
 from services.mongodb import MongoDbOperations
+from models import Bid
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -14,10 +15,10 @@ logger = logging.getLogger(__name__)
 
 class BidAnalyzer:
     def __init__(self, api_key: str = None):
-       self.llm = AiEngines.groq_api()
-       self.output_parser = JsonOutputParser()
-       self.db = MongoDbOperations()
-       self.db.table_name = "ai_insights"
+        self.llm = AiEngines.groq_api()
+        self.output_parser = JsonOutputParser()
+        self.db = MongoDbOperations()
+        self.db.collection_name = "ai_insights"
 
     def generate_bid_insights(self, bid_data: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -90,7 +91,7 @@ class BidAnalyzer:
         return [self.generate_bid_insights(bid) for bid in bids]
 
 
-def load_bids(file_path: str) -> List[Dict[str, Any]]:
+def load_bids(file_path: str) -> List[Bid]:
     """
     Load bids from a JSON file
 
@@ -98,10 +99,11 @@ def load_bids(file_path: str) -> List[Dict[str, Any]]:
         file_path (str): Path to the JSON file containing bids
 
     Returns:
-        List[Dict]: List of bid dictionaries
+        List[Bid]: List of bid instances
     """
     with open(file_path, 'r') as f:
-        return json.load(f)
+        bids_data = json.load(f)
+    return [Bid(**bid) for bid in bids_data]
 
 
 def main():
@@ -117,11 +119,11 @@ def main():
     analyzer = BidAnalyzer()
 
     # Analyze all bids
-    bid_insights = analyzer.analyze_all_bids(bids)
+    bid_insights = analyzer.analyze_all_bids([bid.dict() for bid in bids])
 
     # Save insights to MongoDB
     for bid_insight in bid_insights:
-         analyzer.db.store_bid(bid_insight)
+        analyzer.db.store_data(bid_insight)
 
     # Save insights to a file
     # output_file = f'bid_insights_{datetime.now().strftime("%Y%m%d_%H%M%S")}.json'
