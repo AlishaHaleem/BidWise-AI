@@ -106,6 +106,61 @@ def load_bids(file_path: str) -> List[Bid]:
     return [Bid(**bid) for bid in bids_data]
 
 
+def analyze_bid_with_groq(bid_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Example function that calls your ChatGroq chain
+    to produce a JSON with an 'aiScore' key (and other analysis if desired).
+    """
+
+    # 1. Initialize your AI LLM (ChatGroq) from AiEngines
+    llm = AiEngines.groq_api()
+
+    # 2. Build your prompt
+    # For instance, you can use a simple string or your custom chain.
+    system_prompt = """You are an AI specialized in analyzing connectivity project bids.
+    Output a JSON with an integer 'aiScore' key, rating cost-effectiveness, coverage, and quality.
+    Example:
+    {
+      "aiScore": 85,
+      "analysis": "..."
+    }
+    """
+
+    user_prompt = f"Bid Details: {json.dumps(bid_data)}"
+
+    # 3. Call the LLM - a minimal example (no advanced chain or JSON parser)
+    # You can integrate your existing chain if you prefer.
+    response = llm.invoke(
+        [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt}
+        ]
+    )
+
+    logger.info("Raw AI Response: %s", response)
+
+    # 4. Attempt to parse out the JSON
+    # We'll do a naive approach: find a JSON block in the response
+    # If your chain is well-structured, you can parse it more elegantly.
+    # Or you can use your existing "JsonOutputParser" from your code.
+    analysis = {}
+    try:
+        # If response is raw text, we do a simple parse.
+        # For a robust approach, see your existing 'JsonOutputParser'.
+        analysis = json.loads(response)
+    except Exception as e:
+        logger.error("Failed to parse AI response as JSON: %s", e)
+        # fallback to a default
+        analysis = {"aiScore": 60, "analysis": "Default fallback score."}
+
+    # Ensure we have an integer aiScore
+    if not isinstance(analysis.get("aiScore"), int):
+        logger.warning("No valid 'aiScore' found; defaulting to 70.")
+        analysis["aiScore"] = 70
+
+    return analysis
+
+
 def main():
     # Path to your bid data file
     bid_file_path = 'sample.json'  # Use the filename from the logs

@@ -74,16 +74,14 @@ interface ProjectProgress {
 
 // --------------------------------------
 // ProjectCard component
-// Now includes a "Change Status" button
-// that calls openStatusModal with the project
+// NOW includes a "Create Bid" button if status is "Open for Bids"
 // --------------------------------------
 const ProjectCard: React.FC<{
   project: Project;
   onOpenStatusModal: (project: Project) => void;
-}> = ({ project, onOpenStatusModal }) => {
-  // If you have custom variants for your Badge component,
-  // adjust them here to match your desired color.
-  // For example, "default" could be gray, "warning" = yellow, "success" = green, etc.
+  onOpenNewBidModal: (project: Project) => void;
+}> = ({ project, onOpenStatusModal, onOpenNewBidModal }) => {
+  // Determine badge variant based on status
   let badgeVariant: 'default' | 'warning' | 'success' | 'danger' = 'default';
 
   if (project.status === 'Open for Bids') {
@@ -96,8 +94,22 @@ const ProjectCard: React.FC<{
     badgeVariant = 'danger';
   }
 
+  // Make the entire card clickable if the project is "Open for Bids".
+  const handleCardClick = () => {
+    if (project.status === 'Open for Bids') {
+      onOpenNewBidModal(project);
+    }
+  };
+
   return (
-    <Card className="mb-4 shadow transition-transform hover:shadow-xl hover:-translate-y-1 rounded-xl border border-gray-100">
+    <Card
+      // If "Open for Bids", show a pointer cursor; otherwise keep it default.
+      className={`
+        mb-4 shadow transition-transform hover:shadow-xl hover:-translate-y-1 rounded-xl border border-gray-100
+        ${project.status === 'Open for Bids' ? 'cursor-pointer' : ''}
+      `}
+      onClick={handleCardClick}
+    >
       <CardContent className="p-6">
         <div className="flex justify-between items-start">
           {/* Left Section: Project Name & Info */}
@@ -111,10 +123,9 @@ const ProjectCard: React.FC<{
             </div>
           </div>
 
-          {/* Right Section: Status Badge + Button */}
+          {/* Right Section: Status Badge + Button(s) */}
           <div className="flex items-center space-x-3">
             <Badge
-              // Make the badge pill-shaped with some horizontal padding
               variant={badgeVariant}
               className="rounded-full px-3 py-1 text-xs font-medium tracking-wide"
             >
@@ -129,7 +140,11 @@ const ProjectCard: React.FC<{
                 hover:bg-indigo-50 hover:text-indigo-700
                 focus:ring-indigo-500 focus:border-indigo-500
               "
-              onClick={() => onOpenStatusModal(project)}
+              // Stop click from bubbling to the card's onClick
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpenStatusModal(project);
+              }}
             >
               Change Status
             </Button>
@@ -140,7 +155,7 @@ const ProjectCard: React.FC<{
   );
 };
 
-// BidCard & MilestoneCard remain mostly unchanged, except for style tweaks
+// BidCard & MilestoneCard remain mostly unchanged
 const BidCard: React.FC<{ bid: Bid }> = ({ bid }) => (
   <Card className="mb-4 shadow transition-transform hover:shadow-xl hover:-translate-y-1 rounded-xl border border-gray-100">
     <CardContent className="p-6">
@@ -235,6 +250,13 @@ const BiddingSystem: React.FC = () => {
   const [showStatusModal, setShowStatusModal] = useState<boolean>(false);
   const [statusProject, setStatusProject] = useState<Project | null>(null);
   const [updatedStatus, setUpdatedStatus] = useState<string>('Open for Bids');
+
+  // NEW BID STATES
+  const [showNewBidModal, setShowNewBidModal] = useState<boolean>(false);
+  const [bidProject, setBidProject] = useState<Project | null>(null);
+  const [bidProvider, setBidProvider] = useState<string>('');
+  const [bidCost, setBidCost] = useState<string>('');
+  const [bidCoverage, setBidCoverage] = useState<string>('');
 
   // Fetch initial data
   useEffect(() => {
@@ -403,7 +425,6 @@ const BiddingSystem: React.FC = () => {
     setError('');
 
     try {
-      // PUT /projects/status
       await axiosInstance.put('/projects/status', {
         name: statusProject.name,
         newStatus: updatedStatus
@@ -418,6 +439,68 @@ const BiddingSystem: React.FC = () => {
       if (isAxiosError(err)) {
         if (err.response) {
           setError(err.response.data?.error || 'Failed to update project status.');
+        } else if (err.request) {
+          setError('No response received from the server.');
+        } else {
+          setError(err.message);
+        }
+      } else if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('An unknown error occurred.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // NEW BID
+  const openNewBidModal = (project: Project) => {
+    setBidProject(project);
+    setBidProvider('');
+    setBidCost('');
+    setBidCoverage('');
+    setShowNewBidModal(true);
+  };
+
+  const closeNewBidModal = () => {
+    setShowNewBidModal(false);
+    setBidProject(null);
+    setBidProvider('');
+    setBidCost('');
+    setBidCoverage('');
+  };
+
+  const handleNewBidSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!bidProject) return;
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const bidData = {
+        provider: bidProvider,
+        cost: bidCost,
+        coverage: bidCoverage,
+        project_id: bidProject.name, // or some unique ID for the project
+      };
+      await axiosInstance.post('/bids', bidData);
+      closeNewBidModal();
+
+      // Optional: if we want to refresh the Bids list *immediately* 
+      // and if the user is currently looking at the Bids tab for this project:
+      if (selectedProjectName === bidProject.name) {
+        const refreshResp = await axiosInstance.get<Bid[]>('/bids', {
+          params: { project_id: bidProject.name }
+        });
+        setBids(refreshResp.data);
+      }
+
+    } catch (err) {
+      if (isAxiosError(err)) {
+        if (err.response) {
+          setError(err.response.data?.error || 'Failed to create bid.');
         } else if (err.request) {
           setError('No response received from the server.');
         } else {
@@ -527,6 +610,7 @@ const BiddingSystem: React.FC = () => {
                     key={proj.name}
                     project={proj}
                     onOpenStatusModal={openStatusModal}
+                    onOpenNewBidModal={openNewBidModal} // pass in the handler
                   />
                 ))}
               </div>
@@ -727,245 +811,369 @@ const BiddingSystem: React.FC = () => {
       </div>
 
       {/* New Project Modal */}
-{showNewProjectModal && (
-  <div
-    className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 animate-fadeIn"
-  >
-    <div
-      className="
-        relative bg-white w-full max-w-md p-6 rounded-xl shadow-xl
-        transform transition-all scale-100 animate-slideInFromTop
-      "
-    >
-      {/* Header Section */}
-      <div className="flex items-center justify-between mb-2">
-        <h2 className="text-2xl font-extrabold text-gray-800">
-          Create New Project
-        </h2>
-
-        {/* Close Icon (optional) */}
-        <button
-          onClick={closeNewProjectModal}
-          className="text-gray-400 hover:text-gray-600 focus:outline-none"
-          aria-label="Close"
+      {showNewProjectModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 animate-fadeIn"
         >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-      </div>
-
-      {/* Subtitle or Additional Info */}
-      <p className="text-sm text-gray-500 mb-4">
-        Fill in the details below to add a new project to the system.
-      </p>
-
-      {/* Form */}
-      <form onSubmit={handleNewProjectSubmit} className="space-y-5">
-        <div>
-          <label
-            htmlFor="projectName"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Project Name
-          </label>
-          <input
-            type="text"
-            id="projectName"
+          <div
             className="
-              w-full border border-gray-300 rounded-md p-2
-              focus:ring-indigo-500 focus:border-indigo-500
-              text-sm
+              relative bg-white w-full max-w-md p-6 rounded-xl shadow-xl
+              transform transition-all scale-100 animate-slideInFromTop
             "
-            value={newProjectName}
-            onChange={(e) => setNewProjectName(e.target.value)}
-            required
-          />
+          >
+            {/* Header Section */}
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-2xl font-extrabold text-gray-800">
+                Create New Project
+              </h2>
+              <button
+                onClick={closeNewProjectModal}
+                className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                aria-label="Close"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <p className="text-sm text-gray-500 mb-4">
+              Fill in the details below to add a new project to the system.
+            </p>
+
+            {/* Form */}
+            <form onSubmit={handleNewProjectSubmit} className="space-y-5">
+              <div>
+                <label
+                  htmlFor="projectName"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Project Name
+                </label>
+                <input
+                  type="text"
+                  id="projectName"
+                  className="
+                    w-full border border-gray-300 rounded-md p-2
+                    focus:ring-indigo-500 focus:border-indigo-500
+                    text-sm
+                  "
+                  value={newProjectName}
+                  onChange={(e) => setNewProjectName(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="projectStatus"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Status
+                </label>
+                <select
+                  id="projectStatus"
+                  className="
+                    w-full border border-gray-300 rounded-md p-2
+                    focus:ring-indigo-500 focus:border-indigo-500
+                    text-sm
+                  "
+                  value={newProjectStatus}
+                  onChange={(e) => setNewProjectStatus(e.target.value)}
+                >
+                  <option value="Open for Bids">Open for Bids</option>
+                  <option value="Under Review">Under Review</option>
+                  <option value="Completed">Completed</option>
+                </select>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="projectSchools"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Number of Schools
+                </label>
+                <input
+                  type="number"
+                  id="projectSchools"
+                  className="
+                    w-full border border-gray-300 rounded-md p-2
+                    focus:ring-indigo-500 focus:border-indigo-500
+                    text-sm
+                  "
+                  value={newProjectSchools}
+                  onChange={(e) => setNewProjectSchools(Number(e.target.value))}
+                  min={0}
+                  required
+                />
+              </div>
+
+              <div className="flex items-center justify-end space-x-2 pt-2">
+                <Button
+                  variant="outline"
+                  onClick={closeNewProjectModal}
+                  type="button"
+                  className="
+                    border-gray-300 hover:border-gray-400
+                    text-sm
+                  "
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="default"
+                  type="submit"
+                  className="
+                    bg-indigo-600 text-white hover:bg-indigo-700
+                    text-sm
+                  "
+                >
+                  Create
+                </Button>
+              </div>
+            </form>
+          </div>
         </div>
+      )}
 
-        <div>
-          <label
-            htmlFor="projectStatus"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Status
-          </label>
-          <select
-            id="projectStatus"
-            className="
-              w-full border border-gray-300 rounded-md p-2
-              focus:ring-indigo-500 focus:border-indigo-500
-              text-sm
-            "
-            value={newProjectStatus}
-            onChange={(e) => setNewProjectStatus(e.target.value)}
-          >
-            <option value="Open for Bids">Open for Bids</option>
-            <option value="Under Review">Under Review</option>
-            <option value="Completed">Completed</option>
-          </select>
-        </div>
-
-        <div>
-          <label
-            htmlFor="projectSchools"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Number of Schools
-          </label>
-          <input
-            type="number"
-            id="projectSchools"
-            className="
-              w-full border border-gray-300 rounded-md p-2
-              focus:ring-indigo-500 focus:border-indigo-500
-              text-sm
-            "
-            value={newProjectSchools}
-            onChange={(e) => setNewProjectSchools(Number(e.target.value))}
-            min={0}
-            required
-          />
-        </div>
-
-        {/* Buttons */}
-        <div className="flex items-center justify-end space-x-2 pt-2">
-          <Button
-            variant="outline"
-            onClick={closeNewProjectModal}
-            type="button"
-            className="
-              border-gray-300 hover:border-gray-400
-              text-sm
-            "
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="default"
-            type="submit"
-            className="
-              bg-indigo-600 text-white hover:bg-indigo-700
-              text-sm
-            "
-          >
-            Create
-          </Button>
-        </div>
-      </form>
-    </div>
-  </div>
-)}
-
-{/* Change Status Modal */}
-{showStatusModal && statusProject && (
-  <div
-    className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 animate-fadeIn"
-  >
-    <div
-      className="
-        relative bg-white w-full max-w-md p-6 rounded-xl shadow-xl
-        transform transition-all scale-100 animate-slideInFromTop
-      "
-    >
-      {/* Header Section */}
-      <div className="flex items-center justify-between mb-2">
-        <h2 className="text-2xl font-extrabold text-gray-800">
-          Change Status
-        </h2>
-
-        {/* Close Icon (optional) */}
-        <button
-          onClick={closeStatusModal}
-          className="text-gray-400 hover:text-gray-600 focus:outline-none"
-          aria-label="Close"
+      {/* Change Status Modal */}
+      {showStatusModal && statusProject && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 animate-fadeIn"
         >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-      </div>
-
-      {/* Subtitle / Additional Info */}
-      <p className="text-sm text-gray-500 mb-4">
-        You are updating the status for{' '}
-        <span className="font-semibold">{statusProject.name}</span>.
-      </p>
-
-      {/* Form */}
-      <form onSubmit={handleChangeStatusSubmit} className="space-y-5">
-        <div>
-          <label
-            htmlFor="newStatus"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            New Status
-          </label>
-          <select
-            id="newStatus"
+          <div
             className="
-              w-full border border-gray-300 rounded-md p-2
-              focus:ring-indigo-500 focus:border-indigo-500
-              text-sm
+              relative bg-white w-full max-w-md p-6 rounded-xl shadow-xl
+              transform transition-all scale-100 animate-slideInFromTop
             "
-            value={updatedStatus}
-            onChange={(e) => setUpdatedStatus(e.target.value)}
           >
-            <option value="Open for Bids">Open for Bids</option>
-            <option value="Under Review">Under Review</option>
-            <option value="Completed">Completed</option>
-          </select>
+            {/* Header Section */}
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-2xl font-extrabold text-gray-800">
+                Change Status
+              </h2>
+              <button
+                onClick={closeStatusModal}
+                className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                aria-label="Close"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <p className="text-sm text-gray-500 mb-4">
+              You are updating the status for{' '}
+              <span className="font-semibold">{statusProject.name}</span>.
+            </p>
+
+            {/* Form */}
+            <form onSubmit={handleChangeStatusSubmit} className="space-y-5">
+              <div>
+                <label
+                  htmlFor="newStatus"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  New Status
+                </label>
+                <select
+                  id="newStatus"
+                  className="
+                    w-full border border-gray-300 rounded-md p-2
+                    focus:ring-indigo-500 focus:border-indigo-500
+                    text-sm
+                  "
+                  value={updatedStatus}
+                  onChange={(e) => setUpdatedStatus(e.target.value)}
+                >
+                  <option value="Open for Bids">Open for Bids</option>
+                  <option value="Under Review">Under Review</option>
+                  <option value="Completed">Completed</option>
+                </select>
+              </div>
+
+              <div className="flex items-center justify-end space-x-2 pt-2">
+                <Button
+                  variant="outline"
+                  onClick={closeStatusModal}
+                  type="button"
+                  className="
+                    border-gray-300 hover:border-gray-400
+                    text-sm
+                  "
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="default"
+                  type="submit"
+                  className="
+                    bg-indigo-600 text-white hover:bg-indigo-700
+                    text-sm
+                  "
+                >
+                  Update
+                </Button>
+              </div>
+            </form>
+          </div>
         </div>
+      )}
 
-        {/* Buttons */}
-        <div className="flex items-center justify-end space-x-2 pt-2">
-          <Button
-            variant="outline"
-            onClick={closeStatusModal}
-            type="button"
+      {/* NEW BID MODAL */}
+      {showNewBidModal && bidProject && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 animate-fadeIn"
+        >
+          <div
             className="
-              border-gray-300 hover:border-gray-400
-              text-sm
+              relative bg-white w-full max-w-md p-6 rounded-xl shadow-xl
+              transform transition-all scale-100 animate-slideInFromTop
             "
           >
-            Cancel
-          </Button>
-          <Button
-            variant="default"
-            type="submit"
-            className="
-              bg-indigo-600 text-white hover:bg-indigo-700
-              text-sm
-            "
-          >
-            Update
-          </Button>
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-2xl font-extrabold text-gray-800">
+                Create New Bid
+              </h2>
+              <button
+                onClick={closeNewBidModal}
+                className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                aria-label="Close"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <p className="text-sm text-gray-500 mb-4">
+              Add a new bid for project{' '}
+              <span className="font-semibold">{bidProject.name}</span>.
+            </p>
+
+            <form onSubmit={handleNewBidSubmit} className="space-y-5">
+              <div>
+                <label
+                  htmlFor="bidProvider"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Provider
+                </label>
+                <input
+                  type="text"
+                  id="bidProvider"
+                  className="
+                    w-full border border-gray-300 rounded-md p-2
+                    focus:ring-emerald-500 focus:border-emerald-500
+                    text-sm
+                  "
+                  value={bidProvider}
+                  onChange={(e) => setBidProvider(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="bidCost"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Cost
+                </label>
+                <input
+                  type="text"
+                  id="bidCost"
+                  className="
+                    w-full border border-gray-300 rounded-md p-2
+                    focus:ring-emerald-500 focus:border-emerald-500
+                    text-sm
+                  "
+                  value={bidCost}
+                  onChange={(e) => setBidCost(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="bidCoverage"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Coverage
+                </label>
+                <input
+                  type="text"
+                  id="bidCoverage"
+                  className="
+                    w-full border border-gray-300 rounded-md p-2
+                    focus:ring-emerald-500 focus:border-emerald-500
+                    text-sm
+                  "
+                  value={bidCoverage}
+                  onChange={(e) => setBidCoverage(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="flex items-center justify-end space-x-2 pt-2">
+                <Button
+                  variant="outline"
+                  onClick={closeNewBidModal}
+                  type="button"
+                  className="
+                    border-gray-300 hover:border-gray-400
+                    text-sm
+                  "
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="default"
+                  type="submit"
+                  className="
+                    bg-emerald-600 text-white hover:bg-emerald-700
+                    text-sm
+                  "
+                >
+                  Submit Bid
+                </Button>
+              </div>
+            </form>
+          </div>
         </div>
-      </form>
-    </div>
-  </div>
-)}
-
+      )}
     </div>
   );
 };
